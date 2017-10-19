@@ -18,6 +18,7 @@ type Config struct {
 	ListenAddr string `json:"listen"`
 	RemoteAddr string `json:"remote"`
 	Password   string `json:"password"`
+	VerfyCode  string `json:"verfycode"`
 }
 
 // 配置文件路径
