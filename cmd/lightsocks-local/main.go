@@ -25,6 +25,9 @@ func main() {
 	config.ReadConfig()
 	config.SaveConfig()
 
+	// 校验码处理
+	
+
 	// 解析配置
 	password, err := core.ParsePassword(config.Password)
 	if err != nil {

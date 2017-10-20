@@ -27,6 +27,7 @@ var configPath string
 func init() {
 	home, _ := homedir.Dir()
 	configPath = path.Join(home, ConfigFileName)
+	log.Printf("Config File: %s", configPath)
 }
 
 // 保存配置到配置文件

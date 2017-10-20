@@ -55,3 +55,6 @@ func RandPassword() *Password {
 		return password
 	}
 }
+
+// 校验码处理
+
