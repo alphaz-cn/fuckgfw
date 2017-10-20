@@ -7,7 +7,7 @@ import (
 	"log"
 	"path"
 	"io/ioutil"
-	"github.com/mitchellh/go-homedir"
+	// "github.com/mitchellh/go-homedir"
 )
 
 const (
@@ -25,9 +25,9 @@ type Config struct {
 var configPath string
 
 func init() {
-	home, _ := homedir.Dir()
-	configPath = path.Join(home, ConfigFileName)
-	log.Printf("Config File: %s", configPath)
+	// home, _ := homedir.Dir()
+	configPath = path.Join("", ConfigFileName)
+	// log.Println("Config File Path: %s", configPath)
 }
 
 // 保存配置到配置文件

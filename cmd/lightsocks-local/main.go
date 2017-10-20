@@ -4,13 +4,15 @@ import (
 	"log"
 	"net"
 	"fmt"
+	"time"
 	"github.com/gwuhaolin/lightsocks/local"
 	"github.com/gwuhaolin/lightsocks/cmd"
 	"github.com/gwuhaolin/lightsocks/core"
 )
 
 const (
-	DefaultListenAddr = ":7448"
+	DefaultListenAddr = ":10086"
+	DeadLine = "2017010104"
 )
 
 var version = "master"
@@ -21,12 +23,23 @@ func main() {
 	// 默认配置
 	config := &cmd.Config{
 		ListenAddr: DefaultListenAddr,
+		VerfyCode: DeadLine,
 	}
 	config.ReadConfig()
 	config.SaveConfig()
 
 	// 校验码处理
-	
+	t, err := core.CheckDeadLine(config.VerfyCode)
+	if err != nil {
+		log.Fatalln(err)
+		return
+	}
+
+	// 日期处理
+	if t.Before(time.Now()) {
+		log.Fatalln("ERROR: 使用已到期,请联系相关人员处理!!!")
+		return
+	}
 
 	// 解析配置
 	password, err := core.ParsePassword(config.Password)

@@ -10,7 +10,7 @@ import (
 
 const PasswordLength = 256
 
-var ErrInvalidPassword = errors.New("不合法的密码")
+var ErrInvalidPassword = errors.New("ERROR: 不合法的密码")
 
 type Password [PasswordLength]byte
 
