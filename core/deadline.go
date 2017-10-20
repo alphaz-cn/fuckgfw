@@ -2,7 +2,7 @@
 * @Author: happyyi
 * @Date:   2017-10-20 20:44:32
 * @Last Modified by:   happyyi
-* @Last Modified time: 2017-10-20 21:31:05
+* @Last Modified time: 2017-10-20 22:02:44
 */
 package core
 
@@ -36,7 +36,8 @@ func CheckDeadLine(VerfyCode string) (time.Time, error){
 		return t, nil
 	} else {
 		// log.Printf("ERROR, xorcode %s xor=%s t=%s", GetXorCode(date) ,xorcode, t)
-		return t, errors.New("ERROR: 配置日期校验错误,Xor=" + GetXorCode(date))
+		return t, errors.New("ERROR: 配置日期校验错误")
+		// return t, errors.New("ERROR: 配置日期校验错误,Xor=" + GetXorCode(date))
 	}
 	return t,errors.New("日期校验未知错误")
 }
