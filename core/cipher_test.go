@@ -1,9 +1,10 @@
 package core
 
 import (
-	"testing"
-	"reflect"
 	"crypto/rand"
+	"fmt"
+	"reflect"
+	"testing"
 )
 
 const (
@@ -15,6 +16,17 @@ func TestCipher(t *testing.T) {
 	password := RandPassword()
 	t.Log(password)
 	cipher := NewCipher(password)
+	s := ""
+	for i, v := range cipher.encodePassword {
+		s += fmt.Sprintf("%d:%d ", i, v)
+	}
+	t.Log(s)
+	s = ""
+	for i, v := range cipher.decodePassword {
+		s += fmt.Sprintf("%d:%d ", i, v)
+	}
+	t.Log(s)
+
 	// 原数据
 	org := make([]byte, PasswordLength)
 	for i := 0; i < PasswordLength; i++ {
