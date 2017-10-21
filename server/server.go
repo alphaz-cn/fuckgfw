@@ -71,12 +71,13 @@ func (lsServer *LsServer) handleConn(localConn *net.TCPConn) {
 		appear in the METHODS field.
 	*/
 	// 第一个字段VER代表Socks的版本，Socks5默认为0x05，其固定长度为1个字节
-	_, err := lsServer.DecodeRead(localConn, buf)
+	l, err := lsServer.DecodeRead(localConn, buf)
+	log.Print(buf[:l])
 	// 只支持版本5
 	if err != nil || buf[0] != 0x05 {
+		log.Println("ERROR: Socks Version Not Support")
 		return
 	}
-
 	/**
 		The dstServer selects from one of the methods given in METHODS, and
 	   	sends a METHOD selection message:
@@ -111,7 +112,9 @@ func (lsServer *LsServer) handleConn(localConn *net.TCPConn) {
 	if err != nil || n < 7 {
 		return
 	}
+	log.Print(n, buf[:n])
 	var dIP []byte
+	var dUrl string
 	// aType 代表请求的远程服务器地址类型，值长度1个字节，有三种类型
 	switch buf[3] {
 	case 0x01:
@@ -119,7 +122,8 @@ func (lsServer *LsServer) handleConn(localConn *net.TCPConn) {
 		dIP = buf[4 : 4+net.IPv4len]
 	case 0x03:
 		//	DOMAINNAME: X'03'
-		ipAddr, err := net.ResolveIPAddr("ip", string(buf[5:n-2]))
+		dUrl = string(buf[5 : n-2])
+		ipAddr, err := net.ResolveIPAddr("ip", dUrl)
 		if err != nil {
 			return
 		}
@@ -135,10 +139,12 @@ func (lsServer *LsServer) handleConn(localConn *net.TCPConn) {
 		IP:   dIP,
 		Port: int(binary.BigEndian.Uint16(dPort)),
 	}
+	log.Println(dUrl, dstAddr)
 
 	// 连接真正的远程服务
 	dstServer, err := net.DialTCP("tcp", nil, dstAddr)
 	if err != nil {
+		log.Printf("ERROR: %s DialTCP Error", dstAddr)
 		return
 	} else {
 		defer dstServer.Close()

@@ -1,10 +1,10 @@
 package core
 
 import (
-	"net"
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"time"
 )
 
@@ -42,6 +42,8 @@ func (secureSocket *SecureSocket) EncodeWrite(conn *net.TCPConn, bs []byte) (int
 
 // 从src中源源不断的读取原数据加密后写入到dst，直到src中没有数据可以再读取
 func (secureSocket *SecureSocket) EncodeCopy(dst *net.TCPConn, src *net.TCPConn) error {
+	//src 远程服务器比如baidu.com
+	//dst local端
 	buf := make([]byte, BufSize)
 	for {
 		src.SetReadDeadline(time.Now().Add(TIMEOUT))
@@ -67,6 +69,8 @@ func (secureSocket *SecureSocket) EncodeCopy(dst *net.TCPConn, src *net.TCPConn)
 
 // 从src中源源不断的读取加密后的数据解密后写入到dst，直到src中没有数据可以再读取
 func (secureSocket *SecureSocket) DecodeCopy(dst *net.TCPConn, src *net.TCPConn) error {
+	//src local端
+	//dst 远程服务器比如baidu.com
 	buf := make([]byte, BufSize)
 	for {
 		readCount, errRead := secureSocket.DecodeRead(src, buf)
