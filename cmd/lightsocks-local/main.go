@@ -1,18 +1,18 @@
 package main
 
 import (
-	"log"
-	"net"
 	"fmt"
-	"time"
-	"github.com/gwuhaolin/lightsocks/local"
 	"github.com/gwuhaolin/lightsocks/cmd"
 	"github.com/gwuhaolin/lightsocks/core"
+	"github.com/gwuhaolin/lightsocks/local"
+	"log"
+	"net"
+	"time"
 )
 
 const (
 	DefaultListenAddr = ":10086"
-	DeadLine = "2017010104"
+	DeadLine          = "2017010104"
 )
 
 var version = "master"
@@ -23,7 +23,7 @@ func main() {
 	// 默认配置
 	config := &cmd.Config{
 		ListenAddr: DefaultListenAddr,
-		VerfyCode: DeadLine,
+		VerfyCode:  DeadLine,
 	}
 	config.ReadConfig()
 	config.SaveConfig()

@@ -1,11 +1,11 @@
 package core
 
 import (
-	"math/rand"
+	"encoding/base64"
 	"errors"
+	"math/rand"
 	"strings"
 	"time"
-	"encoding/base64"
 )
 
 const PasswordLength = 256
@@ -55,6 +55,3 @@ func RandPassword() *Password {
 		return password
 	}
 }
-
-// 校验码处理
-
