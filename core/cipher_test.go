@@ -28,12 +28,12 @@ func TestCipher(t *testing.T) {
 	t.Log(s)
 
 	// 原数据
-	org := make([]byte, PasswordLength)
-	for i := 0; i < PasswordLength; i++ {
+	org := make([]byte, 5)
+	for i := 0; i < 5; i++ {
 		org[i] = byte(i)
 	}
 	// 复制一份原数据到 tmp
-	tmp := make([]byte, PasswordLength)
+	tmp := make([]byte, 5)
 	copy(tmp, org)
 	t.Log(tmp)
 	// 加密 tmp
