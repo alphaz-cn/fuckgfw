@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	ConfigFileName = ".lightsocks.json"
+	ConfigFileName = "lsocks.json"
 )
 
 type Config struct {

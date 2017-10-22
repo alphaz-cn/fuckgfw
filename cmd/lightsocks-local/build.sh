@@ -9,5 +9,5 @@
 # GOOS=linux GOARCH=arm GOARM=6 go build -o lsocks_linux_arm6 .
 # GOOS=linux GOARCH=arm GOARM=5 go build -o lsocks_linux_arm5 .
 GOOS=darwin GOARCH=amd64 go build -o lsocks_macos_amd64 .
-# GOOS=windows GOARCH=amd64 go build -o lsocks_windows_amd64.exe .
+ GOOS=windows GOARCH=amd64 go build -o lsocks_windows_amd64.exe .
 # GOOS=windows GOARCH=386 go build -o lsocks_windows_386.exe .
