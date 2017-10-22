@@ -1,13 +1,13 @@
 package main
 
 import (
-	"log"
-	"net"
 	"fmt"
-	"github.com/gwuhaolin/lightsocks/server"
 	"github.com/gwuhaolin/lightsocks/cmd"
 	"github.com/gwuhaolin/lightsocks/core"
+	"github.com/gwuhaolin/lightsocks/server"
 	"github.com/phayes/freeport"
+	"log"
+	"net"
 )
 
 var version = "master"
@@ -25,13 +25,19 @@ func main() {
 	config := &cmd.Config{
 		ListenAddr: fmt.Sprintf(":%d", port),
 		// 密码随机生成
-		Password: core.RandPassword().String(),
+		Passwords: []string{
+			core.RandPassword().String(),
+			core.RandPassword().String(),
+			core.RandPassword().String(),
+			core.RandPassword().String(),
+			core.RandPassword().String(),
+		},
 	}
 	config.ReadConfig()
 	config.SaveConfig()
 
 	// 解析配置
-	password, err := core.ParsePassword(config.Password)
+	passwords, err := core.ParsePassword2(config.Passwords)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -41,14 +47,14 @@ func main() {
 	}
 
 	// 启动 server 端并监听
-	lsServer := server.New(password, listenAddr)
+	lsServer := server.New(passwords, listenAddr)
 	log.Fatalln(lsServer.Listen(func(listenAddr net.Addr) {
 		log.Println("使用配置：", fmt.Sprintf(`
 本地监听地址 listen：
 %s
 密码 password：
 %s
-	`, listenAddr, password))
+	`, listenAddr, passwords))
 		log.Printf("lightsocks-server:%s 启动成功 监听在 %s\n", version, listenAddr.String())
 	}))
 }

@@ -16,10 +16,10 @@ type LsServer struct {
 // 0.监听来自本地代理客户端的请求
 // 1.解密本地代理客户端请求的数据，解析socks5协议，连接用户浏览器真正想要连接的远程服务器
 // 2.加密后转发用户浏览器真正想要连接的远程服务器返回的数据到本地代理客户端
-func New(password *core.Password, listenAddr *net.TCPAddr) *LsServer {
+func New(passwords [5]*core.Password, listenAddr *net.TCPAddr) *LsServer {
 	return &LsServer{
 		SecureSocket: &core.SecureSocket{
-			Cipher:     core.NewCipher(password),
+			Cipher:     core.NewCipher(passwords),
 			ListenAddr: listenAddr,
 		},
 	}
@@ -71,11 +71,12 @@ func (lsServer *LsServer) handleConn(localConn *net.TCPConn) {
 		appear in the METHODS field.
 	*/
 	// 第一个字段VER代表Socks的版本，Socks5默认为0x05，其固定长度为1个字节
-	l, err := lsServer.DecodeRead(localConn, buf)
-	log.Print(buf[:l])
+	l, err := lsServer.DecodeRead(localConn, buf, 0X00)
+	m := buf[2]
+	// log.Print(buf[:l])
 	// 只支持版本5
 	if err != nil || buf[0] != 0x05 {
-		log.Println("ERROR: Socks Version Not Support")
+		log.Println("ERROR: Socks Version Not Support", l)
 		return
 	}
 	/**
@@ -89,7 +90,7 @@ func (lsServer *LsServer) handleConn(localConn *net.TCPConn) {
 		+----+--------+
 	*/
 	// 不需要验证，直接验证通过
-	lsServer.EncodeWrite(localConn, []byte{0x05, 0x00})
+	lsServer.EncodeWrite(localConn, []byte{0x05, 0x00}, m)
 
 	/**
 	+----+-----+-------+------+----------+----------+
@@ -107,12 +108,12 @@ func (lsServer *LsServer) handleConn(localConn *net.TCPConn) {
 	}
 
 	// 获取真正的远程服务的地址
-	n, err := lsServer.DecodeRead(localConn, buf)
+	n, err := lsServer.DecodeRead(localConn, buf, m)
 	// n 最短的长度为7 情况为 ATYP=3 DST.ADDR占用1字节 值为0x0
 	if err != nil || n < 7 {
 		return
 	}
-	log.Print(n, buf[:n])
+	// log.Print(n, buf[:n])
 	var dIP []byte
 	var dUrl string
 	// aType 代表请求的远程服务器地址类型，值长度1个字节，有三种类型
@@ -139,7 +140,7 @@ func (lsServer *LsServer) handleConn(localConn *net.TCPConn) {
 		IP:   dIP,
 		Port: int(binary.BigEndian.Uint16(dPort)),
 	}
-	log.Println(dUrl, dstAddr)
+	// log.Println(dUrl, dstAddr)
 
 	// 连接真正的远程服务
 	dstServer, err := net.DialTCP("tcp", nil, dstAddr)
@@ -160,13 +161,13 @@ func (lsServer *LsServer) handleConn(localConn *net.TCPConn) {
 		+----+-----+-------+------+----------+----------+
 		*/
 		// 响应客户端连接成功
-		lsServer.EncodeWrite(localConn, []byte{0x05, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
+		lsServer.EncodeWrite(localConn, []byte{0x05, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}, m)
 	}
 
 	// 进行转发
 	// 从 localUser 读取数据发送到 dstServer
 	go func() {
-		err := lsServer.DecodeCopy(dstServer, localConn)
+		err := lsServer.DecodeCopy(dstServer, localConn, m)
 		if err != nil {
 			// 在 copy 的过程中可能会存在网络超时等 error 被 return，只要有一个发生了错误就退出本次工作
 			localConn.Close()
@@ -174,5 +175,5 @@ func (lsServer *LsServer) handleConn(localConn *net.TCPConn) {
 		}
 	}()
 	// 从 dstServer 读取数据发送到 localUser，这里因为处在翻墙阶段出现网络错误的概率更大
-	lsServer.EncodeCopy(localConn, dstServer)
+	lsServer.EncodeCopy(localConn, dstServer, m)
 }
