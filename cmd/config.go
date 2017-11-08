@@ -1,17 +1,17 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
 	"encoding/json"
-	"log"
-	"path"
+	"fmt"
 	"io/ioutil"
+	"log"
+	"os"
+	"path"
 	// "github.com/mitchellh/go-homedir"
 )
 
 const (
-	ConfigFileName    = ".lightsocks.json"
+	ConfigFileName = "lightsocks.json"
 )
 
 type Config struct {
